@@ -21,31 +21,31 @@ if(isset($_POST['name'])){
     if(strlen($name)<3 || (strlen($name)>15))
     {
         $succesValidation = false;
-        $_SESSION['errorName'] = "Imię musi posiadać od 3 do 15 znaków";
+        $_SESSION['error'] = '<div class="alert alert-danger" role="alert">Niepoprawne dane</div>';
     }
 
     if (!preg_match('/^[a-ząćęłńóśźż]+$/ui', $name)) {
         $succesValidation = false;
-        $_SESSION['errorName'] = "Pole nie może być puste, nie może zawierać cyfr i znaków specjalnych";
+        $_SESSION['error'] = '<div class="alert alert-danger" role="alert">Niepoprawne dane</div>';
     }
 
     //walidacja pola Wołacz
     if(strlen($declination)<3 || (strlen($declination)>15))
     {
         $succesValidation = false;
-        $_SESSION['errorDeclination'] = "Wołacz musi posiadać od 3 do 15 znaków";
+        $_SESSION['error'] = '<div class="alert alert-danger" role="alert">Niepoprawne dane</div>';
     }
 
     if (!preg_match('/^[a-ząćęłńóśźż]+$/ui', $declination)) {
         $succesValidation = false;
-        $_SESSION['errorDeclination'] = "Pole nie może być puste, nie może zawierać cyfr i znaków specjalnych";
+        $_SESSION['error'] = '<div class="alert alert-danger" role="alert">Niepoprawne dane</div>';
     }
 
      // sprawdzenie czy płeć wybrana 
      if ($sex=="brak")
      {
         $succesValidation = false;
-        $_SESSION['errorSex'] = "Musisz wybrać płeć";
+        $_SESSION['error'] = '<div class="alert alert-danger" role="alert">Niepoprawne dane</div>';
      }
 
      //sprawdzenie czy w bazie jest takie imię
@@ -56,7 +56,7 @@ if(isset($_POST['name'])){
       if ($countNames>0)
       {
         $succesValidation = false;
-        $_SESSION['errorName'] = "Istnieje już takie imię w bazie!";
+        $_SESSION['errorDb'] = '<div class="alert alert-danger" role="alert">Istnieje już taki rekord w bazie</div>';
       }
 
     //sprawdzenie czy w bazie jest taki wołacz
@@ -67,7 +67,7 @@ if(isset($_POST['name'])){
       if ($countDeclinations>0)
       {
         $succesValidation = false;
-        $_SESSION['errorDeclination'] = "Istnieje już takie wołacz w bazie!";
+        $_SESSION['errorDb'] = '<div class="alert alert-danger" role="alert">Istnieje już taki rekord w bazie</div>';
       }
 
      // KONIEC WALIDACJI
@@ -126,7 +126,20 @@ $options="";
 <body>
     <div class="container-fluid">
         <form class="form" <?php 'action="add.php?id=' . $id . '"'?> method="post">
+        <?php
+                if(isset($_SESSION['error']))
+                {   
+                    echo $_SESSION['error'];
+                    unset($_SESSION['error']);
+                }
 
+                if(isset($_SESSION['errorDb']))
+                {   
+                    echo $_SESSION['errorDb'];
+                    unset($_SESSION['errorDb']);
+                }
+                ?>
+                
             <?php
             if ($id > 0){
                 echo '<input type="hidden" name="id" value="' . $id . '">';
@@ -134,36 +147,12 @@ $options="";
             ?>
             
             Imię: <input class="form-control" type="text" name="name" value="<?=$nameValue?>">
-            <?php
-                if(isset($_SESSION['errorName']))
-                {   
-                    echo '<span class="error">' . $_SESSION['errorName'] . '</span>';
-                    unset($_SESSION['errorName']);
-                    echo '<br><br>';
-                }
-                ?>
             Wołacz: <input class="form-control" type="text" name="declination" value="<?=$declinationValue?>">
-            <?php
-                if(isset($_SESSION['errorDeclination']))
-                {  
-                    echo '<span class="error">' . $_SESSION['errorDeclination'] . '</span>';
-                    unset($_SESSION['errorDeclination']);
-                    echo '<br><br>';
-                }
-                ?>
             Wybierz płeć: <select class="form-control" name="sex">
                 <option value="brak"<?php if($options=="brak") echo 'selected="selected"'; ?> >brak</option>
                 <option value="K"<?php if($options=="K") echo 'selected="selected"'; ?> >K</option>
                 <option value="M"<?php if($options=="M") echo 'selected="selected"'; ?> >M</option>
             </select>
-            <?php
-                if(isset($_SESSION['errorSex']))
-                {
-                    echo '<span class="error">' . $_SESSION['errorSex'] . '</span>';
-                    unset($_SESSION['errorSex']);
-                    echo '<br>';
-                }
-                ?>
             <br>
             <input type="submit" class="btn btn-md btn-success pull-right" value="Zapisz">
             <br><br>
